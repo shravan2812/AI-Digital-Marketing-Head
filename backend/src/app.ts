@@ -2,6 +2,10 @@
 
 import  express from "express";
 import  cors from "cors";
+import authRoutes from "./routes/auth.routes.js"
+import meRoutes from "./routes/me.routes.js"
+import agencyRoutes from "./routes/agency.routes.js";
+import invitationRoutes from "./routes/invitation.routes.js";
 
 const app = express();
 
@@ -15,6 +19,11 @@ app.get("/api/health",(_req,res)=> {
         message:"AI digital SAAS platform is running"
     })
 })
+
+app.use("/api/auth", authRoutes);
+app.use("/api/me",meRoutes);
+app.use("/api/agency",agencyRoutes);
+app.use("/api/invitations",invitationRoutes);
 
 
 export default app;
