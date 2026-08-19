@@ -1,11 +1,33 @@
+import { Navigate, Route, Routes } from "react-router-dom";
+
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+
 function App() {
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <h1 className="text-4xl font-bold text-blue-600">
-        AI Digital SaaS Platform
-      </h1>
-    </div>
-  )
+    <Routes>
+      <Route
+        path="/"
+        element={<Navigate to="/login" replace />}
+      />
+
+      <Route
+        path="/login"
+        element={<Login />}
+      />
+
+      <Route
+        path="/register"
+        element={<Register />}
+      />
+
+      <Route
+        path="/dashboard"
+        element={<Dashboard />}
+      />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
