@@ -86,3 +86,4 @@ export const removeMember = async (
 
   return result.rows[0] ?? null;
 };
+
