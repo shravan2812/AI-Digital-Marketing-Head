@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import {
   createInvitationController,
+  acceptInvitationController,
 } from "../controllers/invitation.controller.js";
 
 import {
@@ -23,6 +24,11 @@ router.post(
   authenticate,
   requireRole(ROLES.ADMIN),
   createInvitationController
+);
+
+router.post(
+  "/accept",
+  acceptInvitationController
 );
 
 export default router;

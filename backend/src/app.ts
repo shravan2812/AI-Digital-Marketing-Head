@@ -6,6 +6,8 @@ import authRoutes from "./routes/auth.routes.js"
 import meRoutes from "./routes/me.routes.js"
 import agencyRoutes from "./routes/agency.routes.js";
 import invitationRoutes from "./routes/invitation.routes.js";
+import teamRoutes from "./routes/team.routes.js";
+import clientRoutes from "./routes/client.routes.js";
 
 const app = express();
 
@@ -24,6 +26,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/me",meRoutes);
 app.use("/api/agency",agencyRoutes);
 app.use("/api/invitations",invitationRoutes);
+app.use("/api/team", teamRoutes);
+app.use("/api/clients", clientRoutes);
 
 
 export default app;

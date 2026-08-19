@@ -1,17 +1,19 @@
-import type { Response } from "express";
-
+import type { Request,Response } from "express";
 import type { AuthenticatedRequest } from "../middleware/auth.middleware.js";
-
 import { ROLES } from "../constants/roles.js";
 import { INVITABLE_ROLES } from "../constants/invitation.js";
-
 import {
     createInvitation,
     isAgencyMemberByEmail,
     hasPendingInvitation,
+    acceptInvitation
 } from "../services/invitation.service.js";
 
-
+interface AcceptInvitationBody {
+  token: string;
+  name: string;
+  password: string;
+}
 
 export const createInvitationController = async (
     req: AuthenticatedRequest,
@@ -95,4 +97,102 @@ export const createInvitationController = async (
         });
     }
 };
+
+export const acceptInvitationController = async (
+  req: Request<{}, {}, AcceptInvitationBody>,
+  res: Response
+) => {
+  try {
+    const {
+      token,
+      name,
+      password,
+    } = req.body;
+
+    if (!token || typeof token !== "string") {
+      return res.status(400).json({
+        success: false,
+        message: "Invitation token is required",
+      });
+    }
+
+    if (!name || typeof name !== "string") {
+      return res.status(400).json({
+        success: false,
+        message: "Name is required",
+      });
+    }
+
+    if (!password || typeof password !== "string") {
+      return res.status(400).json({
+        success: false,
+        message: "Password is required",
+      });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters",
+      });
+    }
+
+    const result = await acceptInvitation(
+      token.trim(),
+      name,
+      password
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: "Invitation accepted successfully",
+      data: result,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === "INVITATION_NOT_FOUND") {
+        return res.status(404).json({
+          success: false,
+          message: "Invitation not found",
+        });
+      }
+
+      if (
+        error.message ===
+        "INVITATION_ALREADY_ACCEPTED"
+      ) {
+        return res.status(409).json({
+          success: false,
+          message: "Invitation has already been accepted",
+        });
+      }
+
+      if (error.message === "INVITATION_EXPIRED") {
+        return res.status(410).json({
+          success: false,
+          message: "Invitation has expired",
+        });
+      }
+
+      if (error.message === "USER_ALREADY_EXISTS") {
+        return res.status(409).json({
+          success: false,
+          message: "A user with this email already exists",
+        });
+      }
+    }
+
+    console.error(
+      "Accept invitation error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to accept invitation",
+    });
+  }
+};
+
+
 
