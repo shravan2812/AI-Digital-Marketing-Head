@@ -9,7 +9,8 @@ const __dirname = path.dirname(__filename);
 
 const migrationPath = path.resolve(
   __dirname,
-  "../../migrations/001_initial_schema.sql"
+  "../../migrations/001_initial_schema.sql",
+  "../../migrations/002_initial_schema.sql"
 );
 
 const runMigration = async () => {

@@ -8,6 +8,7 @@ import agencyRoutes from "./routes/agency.routes.js";
 import invitationRoutes from "./routes/invitation.routes.js";
 import teamRoutes from "./routes/team.routes.js";
 import clientRoutes from "./routes/client.routes.js";
+import auditRoutes from "./routes/audit.routes.js";
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use("/api/agency",agencyRoutes);
 app.use("/api/invitations",invitationRoutes);
 app.use("/api/team", teamRoutes);
 app.use("/api/clients", clientRoutes);
+app.use("/api/audits", auditRoutes);
 
 
 export default app;
