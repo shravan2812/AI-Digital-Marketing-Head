@@ -145,11 +145,13 @@ export const runAudit = async (
         );
 
         const parsedWebsite = parseWebsiteHtml(
-            website.html
+            website.html,
+            url
         );
 
         const seoAnalysis = analyzeSeo(
-            parsedWebsite
+            parsedWebsite,
+            url
         );
 
         // For now, we are only storing basic fetch information.
@@ -201,4 +203,43 @@ export const runAudit = async (
             [errorMessage, auditId]
         );
     }
+};
+
+export const getAuditById = async (
+    auditId: string,
+    agencyId: string
+): Promise<WebsiteAudit | null> => {
+    const result = await pool.query(
+        `
+        SELECT
+            wa.id,
+            wa.client_id,
+            wa.url,
+            wa.status,
+            wa.performance_score,
+            wa.seo_score,
+            wa.accessibility_score,
+            wa.best_practices_score,
+            wa.pages_scanned,
+            wa.audit_data,
+            wa.error_message,
+            wa.started_at,
+            wa.completed_at,
+            wa.created_at,
+            wa.updated_at
+        FROM website_audits wa
+        INNER JOIN clients c
+            ON c.id = wa.client_id
+        WHERE wa.id = $1
+          AND c.agency_id = $2
+        LIMIT 1
+        `,
+        [auditId, agencyId]
+    );
+
+    if (result.rows.length === 0) {
+        return null;
+    }
+
+    return result.rows[0] as WebsiteAudit;
 };

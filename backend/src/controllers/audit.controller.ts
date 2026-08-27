@@ -1,9 +1,13 @@
 import type { Response } from "express";
 import type { AuthenticatedRequest } from "../middleware/auth.middleware.js";
+
 import {
     createAudit,
+    getAuditById,
 } from "../services/audit.service.js";
+
 import type { CreateAuditInput } from "../types/audit.types.js";
+
 import {
     validateAuditUrl,
 } from "../validators/audit.validator.js";
@@ -24,10 +28,7 @@ export const createAuditController = async (
 
         const { clientId, url } = req.body;
 
-        if (
-            !clientId ||
-            typeof clientId !== "string"
-        ) {
+        if (!clientId || typeof clientId !== "string") {
             return res.status(400).json({
                 success: false,
                 message: "Client ID is required",
@@ -74,6 +75,56 @@ export const createAuditController = async (
         return res.status(500).json({
             success: false,
             message: "Failed to create website audit",
+        });
+    }
+};
+
+
+export const getAuditController = async (
+    req: AuthenticatedRequest,
+    res: Response
+) => {
+    try {
+        const agencyId = req.user?.agencyId;
+
+        if (!agencyId) {
+            return res.status(400).json({
+                success: false,
+                message: "Agency information is missing",
+            });
+        }
+
+        const { id } = req.params;
+
+        if (!id || typeof id !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "Valid Audit ID is required",
+            });
+        }
+
+        const audit = await getAuditById(
+            id,
+            agencyId
+        );
+
+        if (!audit) {
+            return res.status(404).json({
+                success: false,
+                message: "Audit not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            audit,
+        });
+    } catch (error) {
+        console.error("Get audit error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to get audit",
         });
     }
 };
